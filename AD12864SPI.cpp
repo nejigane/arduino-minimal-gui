@@ -2,6 +2,9 @@
 
 namespace minimal {
 
+uint8_t AD12864SPI::cs1_ = 255;
+uint8_t AD12864SPI::a0_ = 255;
+
 void AD12864SPI::transfer(uint8_t data) {
   digitalWrite(cs1_, LOW);
   SPI.transfer(data);
@@ -53,23 +56,21 @@ void AD12864SPI::begin(uint8_t cs1, uint8_t res, uint8_t a0) {
 }
 
 void AD12864SPI::write(uint8_t page, uint8_t column, const uint8_t* data, uint8_t length) {
-  if (page > 7 || column > 127) return;
+  if (page >= PAGE_SIZE || column >= COLUMN_SIZE) return;
 
   moveTo(page, column);
   digitalWrite(a0_, HIGH);
-  for (uint8_t i = 0; i < length && column + i < 128; ++i) {
+  for (uint8_t i = 0; i < length && column + i < COLUMN_SIZE; ++i) {
     transfer(*(data + i));
   }
 }
 
 void AD12864SPI::clear() {
-  for(uint8_t page = 0; page < 8; ++page) {
+  for(uint8_t page = 0; page < PAGE_SIZE; ++page) {
     moveTo(page, 0);
     digitalWrite(a0_, HIGH);
-    for(uint8_t column = 0; column < 128; ++column) transfer(0);
+    for(uint8_t column = 0; column < COLUMN_SIZE; ++column) transfer(0);
   }
 }
-
-AD12864SPI Display;
 
 }
