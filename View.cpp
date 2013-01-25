@@ -9,7 +9,7 @@ void View::draw() {
   char nameChar[name_.length() + 1];
   name_.toCharArray(nameChar, name_.length() + 1);
 
-  uint8_t offset = (AD12864SPI::COLUMN_SIZE - name_.length() * Font::getWidth()) / 2;
+  uint8_t offset = (AD12864SPI::COLUMN_SIZE - name_.length() * Font::GLYPH_WIDTH) / 2;
 
   uint8_t buffer[AD12864SPI::COLUMN_SIZE] = {0};
   Font::getData(nameChar, buffer + offset, AD12864SPI::COLUMN_SIZE - offset, true);

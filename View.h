@@ -8,7 +8,7 @@
 namespace minimal {
 
 class View {
-private:
+protected:
   String name_;	
 public:
   View(const char* name);

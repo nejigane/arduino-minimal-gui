@@ -7,7 +7,7 @@ namespace minimal {
 
 class Font {
 public:
-	static uint8_t getWidth() { return 7; };
+	const static uint8_t GLYPH_WIDTH = 7;
 	static void getData(const char* string, uint8_t* buffer, uint8_t bufferLength, bool isUpper);
 };
 
