@@ -9,13 +9,16 @@ namespace minimal {
 
 class View {
 protected:
-  String name_;	
+  char* name_;	
 public:
   View(const char* name);
   virtual void draw();
   virtual void forward();
   virtual void backward();
   virtual bool click();
+  const char* getName() const;
+  void drawOkButton(bool focused = false);
+  void drawCancelButton(bool focused = false);
 };
 
 }

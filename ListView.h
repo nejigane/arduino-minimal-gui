@@ -10,7 +10,7 @@ protected:
   static const uint8_t SCROLL_BAR_WIDTH;
   struct Item {
     char* name;
-    const char* (*callback)(const char*);
+    void (*callback)(const char*);
     View* subView;
     Item* next;
     Item* prev;
@@ -21,6 +21,7 @@ protected:
   View* activeSubView_;
   void drawScrollBar();
   void drawItem(Item* item, uint8_t position);
+  void addItem(const char* name, Item* item);
 
 public:
   ListView(const char* name);
@@ -28,7 +29,8 @@ public:
   virtual void forward();
   virtual void backward();
   virtual bool click();
-  void addItem(const char* name, const char* (*callback)(const char*) = NULL, View* subView = NULL);
+  void addItem(const char* name, void (*callback)(const char*));
+  void addItem(View* subView);
 };
 
 }

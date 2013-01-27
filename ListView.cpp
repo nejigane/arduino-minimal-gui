@@ -64,9 +64,13 @@ void ListView::drawScrollBar() {
 }
 
 void ListView::draw() {
+  if (activeSubView_) {
+    activeSubView_->draw();
+    return;
+  }
+
   View::draw();
   drawScrollBar();
-
   uint8_t position = 0;
   Item* current = visibleHead_;
   while (current != NULL) {
@@ -105,21 +109,42 @@ void ListView::backward() {
 }
 
 bool ListView::click() {
+  if (focused_ == NULL) return true;
   if (activeSubView_ != NULL) {
-    activeSubView_->click();
+    if(activeSubView_->click()) {
+      AD12864SPI::clear();
+      activeSubView_ = NULL;
+    }
+  } else {
+    if (focused_->callback) focused_->callback(focused_->name);
+    if (focused_->subView) {
+      AD12864SPI::clear();
+      activeSubView_ = focused_->subView;
+    }
   }
   return false;
 }
 
-void ListView::addItem(const char* name, const char* (*callback)(const char*), View* subView) {
+void ListView::addItem(const char* name, void (*callback)(const char*)) {
   Item *item = new Item();
+  item->callback = callback;
+  item->subView = NULL;
+  addItem(name, item);
+}
+
+void ListView::addItem(View* subView) {
+  Item *item = new Item();
+  item->callback = NULL;
+  item->subView = subView;
+  addItem(subView->getName(), item);
+}
+
+void ListView::addItem(const char* name, Item* item) {
   item->name = (char *)malloc(sizeof(char) * (strlen(name) + 1));
   strcpy(item->name, name);
-  item->callback = callback;
-  item->subView = subView;
   item->next = NULL;
   
-   if (head_ == NULL) {
+  if (head_ == NULL) {
     head_ = item;
     visibleHead_ = item;
     focused_ = item;
