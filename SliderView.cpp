@@ -34,7 +34,7 @@ void SliderView::drawValue() {
 void SliderView::drawSlider() {
   uint16_t a = value_ - min_;
   uint16_t b = max_ - min_;
-  uint16_t barLength = a * 100 / b;
+  uint16_t barLength = b == 0 ? 100 : a * 100 / b;
   
   uint8_t buffer[AD12864SPI::COLUMN_SIZE] = {0};
   buffer[12] = 254;
