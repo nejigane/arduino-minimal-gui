@@ -4,8 +4,13 @@ namespace minimal {
 
 const uint8_t ListView::SCROLL_BAR_WIDTH = 12;
 
-ListView::ListView(const char* name) 
+namespace {
+  bool onBackItemClicked(const char* name) { return true; }
+}
+
+ListView::ListView(const char* name, bool enableBack) 
   : View(name), head_(NULL), visibleHead_(NULL), focused_(NULL), activeSubView_(NULL) {
+    if (enableBack) addItem("< Back", onBackItemClicked);
 }
 
 void ListView::drawItem(Item* item, uint8_t position) {
@@ -110,22 +115,24 @@ void ListView::backward() {
 
 bool ListView::click() {
   if (focused_ == NULL) return true;
+
+  bool doBack = false;
   if (activeSubView_ != NULL) {
     if(activeSubView_->click()) {
       AD12864SPI::clear();
       activeSubView_ = NULL;
     }
-  } else {
-    if (focused_->callback) focused_->callback(focused_->name);
-    if (focused_->subView) {
-      AD12864SPI::clear();
-      activeSubView_ = focused_->subView;
-    }
+  } else if (focused_->callback) {
+    doBack = focused_->callback(focused_->name);
+  } else if (focused_->subView) {
+    AD12864SPI::clear();
+    activeSubView_ = focused_->subView;
   }
-  return false;
+
+  return doBack;
 }
 
-void ListView::addItem(const char* name, void (*callback)(const char*)) {
+void ListView::addItem(const char* name, bool (*callback)(const char*)) {
   Item *item = new Item();
   item->callback = callback;
   item->subView = NULL;
